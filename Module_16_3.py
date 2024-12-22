@@ -1,7 +1,11 @@
 from fastapi import FastAPI, Path
 from typing import Annotated
+
+
 app = FastAPI()
 users = {'1': 'Имя: Example, возраст: 18'}
+
+
 @app.get('/users')
 async def read_users():
     return users
@@ -20,8 +24,8 @@ async def update_user(user_id: Annotated[int, Path(ge=1, le=100, description="В
                       age: Annotated[int, Path(min_length=18, max_length=76, description="Enter User age",
                                                          example=24)]):
     users[user_id] = f"Имя: {username}, возраст: {age}"
-    return f"The user {user_id} is updated"
+    return f"Имя: {username}, возраст: {age}"
 @app.delete('/user/{user_id}')
 async def delete_user(user_id: int):
     del users[user_id]
-    return f"The user {user_id} is deleted"
+    return f"Пользователь с Id номером  {user_id} удален"
