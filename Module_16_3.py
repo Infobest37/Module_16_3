@@ -3,7 +3,7 @@ from typing import Annotated
 
 
 app = FastAPI()
-users = {'1': 'Имя: Example, возраст: 18'}
+users = {}
 
 
 @app.get('/users')
@@ -21,11 +21,20 @@ async def create_user(username: str, age: int):
 async def update_user(user_id: Annotated[int, Path(ge=1, le=100, description="Введите ID пользователя", example= 1 )],
                       username: Annotated[str, Path(min_length=5, max_length=20,
                                             description="Введите имя пользователя",example="UrbanProfi" )],
-                      age: Annotated[int, Path(min_length=18, max_length=76, description="Enter User age",
+                      age: Annotated[int, Path(ge=18, le=76, description="Enter User age",
                                                          example=24)]):
-    users[user_id] = f"Имя: {username}, возраст: {age}"
-    return f"Имя: {username}, возраст: {age}"
+    if str(user_id) not in users:
+        return f"Пользователь с ID {user_id} не существует"
+    else:
+        user_info = f"Имя: {username}, возраст: {age}"
+        users[str(user_id)] = user_info
+        return f"Пользователь {user_id} именен на: Имя {username}, возраст {age}"
 @app.delete('/user/{user_id}')
 async def delete_user(user_id: int, username: str):
-    del users[user_id]
-    return f"Пользователь с Id номером {user_id} имя {username} удален"
+
+    if str(user_id) in users:
+        del users[str(user_id)]
+        return f"Пользователь с Id номером {user_id} имя {username} удален"
+    else:
+        return f"Пользователь с ID номером {user_id} отсутствует"
+
